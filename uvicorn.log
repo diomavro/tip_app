@@ -71,3 +71,107 @@ INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     127.0.0.1:43820 - "GET /employees HTTP/1.1" 200 OK
 INFO:     127.0.0.1:38578 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55632 - "OPTIONS /calculate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55640 - "POST /calculate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55640 - "OPTIONS /save HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55632 - "POST /save HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39290 - "GET /employees HTTP/1.1" 200 OK
+WARNING:  StatReload detected changes in 'backend.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [16844]
+INFO:     Started server process [17235]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:36058 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34220 - "GET /employees HTTP/1.1" 200 OK
+WARNING:  StatReload detected changes in 'backend.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [17235]
+INFO:     Started server process [17643]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'backend.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [17643]
+INFO:     Started server process [17665]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'backend.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [17665]
+INFO:     Started server process [17730]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'tests/test_allocation.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [17730]
+INFO:     Started server process [17759]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'backend.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [17759]
+INFO:     Started server process [17830]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'tests/test_allocation.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [17830]
+INFO:     Started server process [17963]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'tests/test_allocation.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [17963]
+INFO:     Started server process [18071]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'backend.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [18071]
+INFO:     Started server process [18128]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'backend.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [18128]
+INFO:     Started server process [18176]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:54680 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59124 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50098 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42846 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54248 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54248 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43002 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47392 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57730 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36560 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36564 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53642 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35438 - "OPTIONS /calculate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35448 - "POST /calculate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35448 - "OPTIONS /save HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35438 - "POST /save HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58732 - "GET /employees HTTP/1.1" 200 OK

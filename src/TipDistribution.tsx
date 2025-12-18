@@ -37,6 +37,7 @@ const TipDistribution: React.FC = () => {
   const [results, setResults] = useState<CalculationResult[]>([]);
   const [isSaved, setIsSaved] = useState(false);
   const [error, setError] = useState<string>('');
+  const [restaurantShare, setRestaurantShare] = useState<number>(0.02);
 
   // Load persisted employees (name + type) from localStorage on mount
   React.useEffect(() => {
@@ -279,15 +280,38 @@ const TipDistribution: React.FC = () => {
                   className="px-2 py-1 border border-gray-700 rounded bg-gray-700 text-gray-100"
                 />
               </div>
-              <div>
-                <button
-                  onClick={addEmployee}
-                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-                >
-                  <Plus size={20} />
-                  Add Employee
-                </button>
-              </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={addEmployee}
+                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                  >
+                    <Plus size={20} />
+                    Add Employee
+                  </button>
+
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm text-gray-300">Restaurant %</label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={50}
+                      step={0.1}
+                      value={(restaurantShare * 100).toFixed(1)}
+                      onChange={(e) => {
+                        const v = parseFloat(e.target.value);
+                        if (!isNaN(v)) setRestaurantShare(Math.max(0, v) / 100);
+                      }}
+                      className="w-20 px-2 py-1 border border-gray-700 rounded bg-gray-700 text-gray-100 text-right"
+                    />
+                    <button
+                      onClick={() => setRestaurantShare(0.03)}
+                      className="px-2 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 text-sm"
+                      title="Set restaurant share to 3%"
+                    >
+                      Set 3%
+                    </button>
+                  </div>
+                </div>
             </div>
 
             <div className="overflow-x-auto">
@@ -388,6 +412,7 @@ const TipDistribution: React.FC = () => {
           {/* Live-updating distribution table */}
           <div className="mt-6 bg-gray-800 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-gray-100 mb-2">Live Distribution</h3>
+            
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -396,7 +421,9 @@ const TipDistribution: React.FC = () => {
                     <th className="px-3 py-2 text-center text-gray-200">Hours</th>
                     <th className="px-3 py-2 text-center text-gray-200">Role Multiplier</th>
                     <th className="px-3 py-2 text-center text-gray-200">Points</th>
+                    <th className="px-3 py-2 text-center text-gray-200">Tips before Rounding</th>
                     <th className="px-3 py-2 text-center text-gray-200">Proportion of Points</th>
+                    <th className="px-3 py-2 text-center text-gray-200">Proportion after Rounding</th>
                     <th className="px-3 py-2 text-center text-gray-200">Visual</th>
                     <th className="px-3 py-2 text-center text-gray-200">Weekly Tip</th>
                   </tr>
@@ -422,59 +449,49 @@ const TipDistribution: React.FC = () => {
 
                     const totalEmployeePoints = totalsWithPoints.reduce((s, e) => s + e.points, 0);
 
-                    // Restaurant row that gets a fixed share of points (default 2%)
-                    const restaurantShare = 0.02; // 2%
-                    const restaurantPoints = totalEmployeePoints * (restaurantShare / (1 - restaurantShare));
-
-                    const totalsWithRestaurant = [
-                      ...totalsWithPoints,
-                      { id: 'restaurant', name: 'Restaurant', total: 0, type: 'restaurant', mult: 0, points: restaurantPoints }
-                    ];
-
-                    const totalPoints = totalsWithRestaurant.reduce((s, e) => s + e.points, 0);
+                    // use `restaurantShare` from component state (editable by the user)
                     const totalTipsValue = parseFloat(totalTips) || 0;
 
-                    // compute raw weekly tips and rounded to nearest $5
-                    const rows = totalsWithRestaurant.map(emp => {
-                      const prop = totalPoints > 0 ? emp.points / totalPoints : 0;
+                    // For each employee: scaled proportion = (points / totalEmployeePoints) * (1 - restaurantShare)
+                    const employeeRows = totalsWithPoints.map(emp => {
+                      const rawPropPoints = totalEmployeePoints > 0 ? (emp.points / totalEmployeePoints) : 0;
+                      const prop = rawPropPoints * (1 - restaurantShare);
                       const weeklyRaw = prop * totalTipsValue;
                       const weeklyRounded = Math.round(weeklyRaw / 5) * 5;
-                      return { emp, prop, weeklyRaw, weeklyRounded };
+                      return { emp, rawPropPoints, prop, weeklyRaw, weeklyRounded };
                     });
 
-                    // If rounding caused payouts to exceed total tips, take the difference from the restaurant row
-                    const sumRounded = rows.reduce((s, r) => s + r.weeklyRounded, 0);
-                    let adjustedRows = rows.slice();
-                    if (sumRounded > totalTipsValue) {
-                      const diff = sumRounded - totalTipsValue;
-                      const restIdx = adjustedRows.findIndex(r => r.emp.id === 'restaurant');
-                      if (restIdx !== -1) {
-                        adjustedRows[restIdx] = {
-                          ...adjustedRows[restIdx],
-                          weeklyRounded: Math.max(0, adjustedRows[restIdx].weeklyRounded - diff)
-                        };
-                      }
-                    }
+                    const sumEmployeesRounded = employeeRows.reduce((s, r) => s + r.weeklyRounded, 0);
+                    // restaurantAmount may be negative if rounding caused over-distribution; show that to the user
+                    const restaurantAmount = totalTipsValue - sumEmployeesRounded;
 
-                    return adjustedRows.map(r => {
+                    const restaurantRow = { emp: { id: 'restaurant', name: 'Restaurant', total: 0, type: 'restaurant', mult: 0, points: 0 }, rawPropPoints: 0, prop: restaurantShare, weeklyRaw: restaurantShare * totalTipsValue, weeklyRounded: restaurantAmount };
+
+                    const finalRows = [...employeeRows, restaurantRow];
+
+                    return finalRows.map(r => {
                       const emp = r.emp;
                       const prop = r.prop;
                       const [n, d] = approxFraction(prop, 20);
                       const frac = prop === 0 ? '0' : `${n}/${d}`;
                       const weeklyRounded = r.weeklyRounded;
+                      const weeklyRaw = r.weeklyRaw ?? 0;
+                      const propAfter = totalTipsValue > 0 ? (weeklyRounded / totalTipsValue) : 0; // proportion after rounding
                       return (
                         <tr key={emp.id} className="border-b border-gray-700">
                           <td className="px-3 py-2">{emp.name} <span className="text-xs text-gray-400">{emp.type && emp.type !== 'restaurant' ? `(${emp.type})` : ''}</span></td>
                           <td className="px-3 py-2 text-center">{emp.total.toFixed(2)} hrs</td>
                           <td className="px-3 py-2 text-center">{emp.type === 'restaurant' ? '-' : (emp.mult * 100).toFixed(0) + '%'}</td>
                           <td className="px-3 py-2 text-center">{emp.points.toFixed(2)}</td>
+                          <td className="px-3 py-2 text-center">${weeklyRaw.toFixed(2)}</td>
                           <td className="px-3 py-2 text-center">{frac} ({(prop * 100).toFixed(2)}%)</td>
+                          <td className="px-3 py-2 text-center">{(propAfter * 100).toFixed(2)}%</td>
                           <td className="px-3 py-2">
                             <div className="w-full bg-gray-700 rounded h-3">
-                              <div className="bg-green-500 h-3 rounded" style={{ width: `${(prop * 100) || 0}%` }} />
+                              <div className="bg-green-500 h-3 rounded" style={{ width: `${(propAfter * 100) || 0}%` }} />
                             </div>
                           </td>
-                          <td className="px-3 py-2 text-center font-semibold">${weeklyRounded.toFixed(2)}</td>
+                          <td className={`px-3 py-2 text-center font-semibold ${weeklyRounded < 0 ? 'text-red-400' : ''}`}>${weeklyRounded.toFixed(2)}</td>
                         </tr>
                       );
                     });

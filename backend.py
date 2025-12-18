@@ -84,6 +84,65 @@ def role_to_multiplier(role: str) -> float:
         return 0.6
     return 0.8
 
+
+def compute_allocation(total_tips: float, employees: List[Employee], restaurant_share: float = 0.02, round_to: float = 5.0):
+    """
+    Compute allocation with role multipliers, add restaurant row with fixed share, round weekly amounts to `round_to`,
+    and subtract any rounding overage from the restaurant row.
+
+    Returns a list of dictionaries with keys: name, id (or 'restaurant'), hours, role, multiplier, points,
+    prop (raw), weekly_raw, weekly_rounded, prop_after
+    """
+    total_tips_value = float(total_tips)
+
+    # Compute multipliers and points for employees
+    totals_with_points = []
+    for emp in employees:
+        mult = emp.multiplier if emp.multiplier is not None else role_to_multiplier(emp.role or '')
+        points = (emp.hours or 0) * mult
+        totals_with_points.append({
+            'id': emp.name,
+            'name': emp.name,
+            'hours': emp.hours,
+            'role': emp.role,
+            'multiplier': mult,
+            'points': points
+        })
+
+    total_employee_points = sum(x['points'] for x in totals_with_points)
+
+    rows = []
+    # If there are no employee points, everyone gets 0 and restaurant gets everything
+    if total_employee_points <= 0 or total_tips_value <= 0:
+        # employees with zero allocations
+        for x in totals_with_points:
+            rows.append({**x, 'prop': 0.0, 'weekly_raw': 0.0, 'weekly_rounded': 0.0, 'prop_after': 0.0})
+        rows.append({'id': 'restaurant', 'name': 'Restaurant', 'hours': 0, 'role': 'restaurant', 'multiplier': 0.0, 'points': 0.0, 'prop': restaurant_share, 'weekly_raw': total_tips_value, 'weekly_rounded': total_tips_value, 'prop_after': 1.0 if total_tips_value > 0 else 0.0})
+        return rows
+
+    # Scale employee proportions so restaurant gets `restaurant_share` of the total (spreadsheet pattern)
+    for x in totals_with_points:
+        raw_prop_points = x['points'] / total_employee_points if total_employee_points > 0 else 0.0
+        prop = raw_prop_points * (1.0 - restaurant_share)
+        weekly_raw = prop * total_tips_value
+        weekly_rounded = (round(weekly_raw / round_to) * round_to) if round_to > 0 else weekly_raw
+        rows.append({**x, 'prop': prop, 'weekly_raw': weekly_raw, 'weekly_rounded': weekly_rounded})
+
+    # Sum rounded employee payouts and give the remainder to the restaurant
+    sum_employees_rounded = sum(r['weekly_rounded'] for r in rows)
+    restaurant_amount = max(0.0, total_tips_value - sum_employees_rounded)
+
+    # Restaurant raw share (before rounding) is restaurant_share; weekly_raw for restaurant based on that
+    restaurant_weekly_raw = restaurant_share * total_tips_value
+    # Restaurant receives the remainder after employee rounding (not additionally rounded)
+    rows.append({'id': 'restaurant', 'name': 'Restaurant', 'hours': 0, 'role': 'restaurant', 'multiplier': 0.0, 'points': 0.0, 'prop': restaurant_share, 'weekly_raw': restaurant_weekly_raw, 'weekly_rounded': restaurant_amount})
+
+    # compute prop_after (based on rounded amounts)
+    for r in rows:
+        r['prop_after'] = (r['weekly_rounded'] / total_tips_value) if total_tips_value > 0 else 0.0
+
+    return rows
+
 @app.get("/")
 def read_root():
     return {"message": "Tip Distribution API"}
@@ -105,19 +164,20 @@ def calculate_tips(request: TipCalculationRequest):
     if total_hours <= 0:
         raise HTTPException(status_code=400, detail="Total hours must be greater than 0")
     
-    # Calculate distribution
+    # Use compute_allocation to determine rounded weekly payouts and proportions
+    rows = compute_allocation(request.total_tips, request.employees)
+
     results = []
-    for employee in request.employees:
-        share_percentage = (employee.hours / total_hours) * 100
-        tip_amount = (employee.hours / total_hours) * request.total_tips
-        
+    # map only real employees (exclude restaurant row) into the response model
+    for r in rows:
+        if r.get('id') == 'restaurant':
+            continue
         results.append(CalculationResult(
-            employee_name=employee.name,
-            hours=employee.hours,
-            share_percentage=share_percentage,
-            tip_amount=tip_amount
+            employee_name=r.get('name'),
+            hours=float(r.get('hours') or 0),
+            share_percentage=float(r.get('prop_after', 0.0) * 100),
+            tip_amount=float(r.get('weekly_rounded', 0.0))
         ))
-    
     return results
 
 @app.post("/save")
