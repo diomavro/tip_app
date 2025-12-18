@@ -1,0 +1,73 @@
+nohup: ignoring input
+INFO:     Will watch for changes in these directories: ['/home/dio/Documents/tip_app']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [15044] using StatReload
+INFO:     Started server process [15046]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:59854 - "OPTIONS /calculate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59862 - "POST /calculate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59862 - "OPTIONS /save HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59854 - "POST /save HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39254 - "POST /calculate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39254 - "POST /save HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39254 - "POST /calculate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39254 - "POST /save HTTP/1.1" 200 OK
+WARNING:  StatReload detected changes in 'scripts/inspect_excel.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [15046]
+INFO:     Started server process [16408]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'scripts/inspect_excel.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [16408]
+INFO:     Started server process [16415]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'backend.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [16415]
+INFO:     Started server process [16796]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'backend.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [16796]
+INFO:     Started server process [16811]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'backend.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [16811]
+INFO:     Started server process [16823]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'backend.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [16823]
+INFO:     Started server process [16834]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'backend.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [16834]
+INFO:     Started server process [16844]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:43820 - "GET /employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38578 - "GET /employees HTTP/1.1" 200 OK
